@@ -492,7 +492,7 @@ public class Dashboard extends JFrame {
     private void openEditProfile()                 { showFeatureNotImplemented("Edit Profile"); }
 
     private void openAddUser()                     { showFeatureNotImplemented("Add User"); }
-    private void openEditUser()                    { showFeatureNotImplemented("Edit User"); }
+    private void openEditUser()                    { new UserListView().setVisible(true);}
     private void openDeleteUser()                  { showFeatureNotImplemented("Delete User"); }
 
 
