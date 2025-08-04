@@ -462,8 +462,8 @@ public class Dashboard extends JFrame {
 
     // Stub or actual methods for Add/Edit/Delete actions:
     private void openAddRoutineForm()            { new AddRoutineForm(userId).setVisible(true); }
-    private void openEditRoutine()                { showFeatureNotImplemented("Edit Routine Tracker"); }
-    private void openDeleteRoutine()              { showFeatureNotImplemented("Delete Routine Tracker"); }
+    private void openEditRoutine()                { new RoutineTrackerListView(userId).setVisible(true); }
+    private void openDeleteRoutine()              { new RoutineTrackerListView(userId).setVisible(true); }
 
     private void openAddAttendance()              { new Attendance().setVisible(true); }
     private void openEditAttendance()             { showFeatureNotImplemented("Edit Attendance"); }
@@ -496,7 +496,7 @@ public class Dashboard extends JFrame {
     private void openDeleteUser()                  { showFeatureNotImplemented("Delete User"); }
 
 
-    private void openRoutineTracker()              { new AddRoutineForm(userId).setVisible(true); }
+    private void openRoutineTracker()              { new RoutineTrackerListView(userId).setVisible(true); }
     private void openAttendance()                  { new Attendance(); }
     private void openAddCSEStudentForm()           { new AddCSEStudentForm(userId).setVisible(true); }
     private void openResults()                      { new Results(); }

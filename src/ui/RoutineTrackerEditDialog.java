@@ -2,7 +2,6 @@ package ui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 
 public class RoutineTrackerEditDialog extends JDialog {
     private JTextField readingField, prayerField, bodybuildingField, friendField, giftField, newspaperField;
@@ -83,10 +82,6 @@ public class RoutineTrackerEditDialog extends JDialog {
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
-    public RoutineTrackerEditDialog() {
-
-    }
-
     private JTextField createStyledTextField(String text) {
         JTextField field = new JTextField(text, 15);
         field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -132,7 +127,8 @@ public class RoutineTrackerEditDialog extends JDialog {
 
             if (reading < 0 || prayer < 0 || bodybuilding < 0 ||
                     friend < 0 || gift < 0 || newspaper < 0) {
-                JOptionPane.showMessageDialog(this, "Hours cannot be negative.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Hours cannot be negative.", "Input Error",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
