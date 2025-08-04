@@ -1,34 +1,22 @@
--- Create the database
-CREATE DATABASE IF NOT EXISTS student_portal CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- Create database (if not already created)
+CREATE DATABASE IF NOT EXISTS student_portal;
 USE student_portal;
 
 -- Users table
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(150) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
     username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(100) NOT NULL,
-    city VARCHAR(100),
+    password VARCHAR(255) NOT NULL,
+    city VARCHAR(50),
     gender ENUM('Male', 'Female', 'Other'),
     phone VARCHAR(20),
     address TEXT,
-    profile_picture VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    profile_picture VARCHAR(255)
 );
 
--- CSE Student Data
-CREATE TABLE cse_student_data (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    subject VARCHAR(100) NOT NULL,
-    grade VARCHAR(10) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
--- Routine Tracker
+-- Routine Tracker Main Table (daily logs)
 CREATE TABLE routine_tracker (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -40,48 +28,74 @@ CREATE TABLE routine_tracker (
     gift_giving_hours FLOAT DEFAULT 0,
     newspaper_hours FLOAT DEFAULT 0,
     remarks TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    UNIQUE KEY user_date_unique (user_id, date)
+    UNIQUE KEY user_date_unique(user_id, date)
 );
 
--- Routine Logs
+-- Routine Logs (a different table used in RoutineTrackerPanel, assumed daily entries with short/long term goals)
 CREATE TABLE routine_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     task VARCHAR(255) NOT NULL,
-    short_term_goal VARCHAR(255),
-    long_term_goal VARCHAR(255),
-    reflection TEXT,
+    short_term_goal VARCHAR(255) NOT NULL,
+    long_term_goal VARCHAR(255) NOT NULL,
+    reflection TEXT NOT NULL,
     log_date DATE NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Attendance
+-- Assignments Table
+CREATE TABLE assignments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    deadline DATE NOT NULL,
+    submitted BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Library Table
+CREATE TABLE library (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    author VARCHAR(255) NOT NULL,
+    isbn VARCHAR(50) NOT NULL,
+    published_year INT,
+    available_copies INT DEFAULT 0
+);
+
+-- Attendance Table
 CREATE TABLE attendance (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     attendance_date DATE NOT NULL,
-    status ENUM('Present', 'Absent', 'Leave') DEFAULT 'Present',
+    status ENUM('Present', 'Absent', 'Leave') NOT NULL,
     remarks TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    UNIQUE KEY user_attendance_date_unique (user_id, attendance_date)
+    UNIQUE KEY unique_user_date(user_id, attendance_date)
 );
 
--- Results
+-- Results Table
 CREATE TABLE results (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    course_name VARCHAR(255),
-    exam_date DATE,
-    grade VARCHAR(10),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    course_name VARCHAR(255) NOT NULL,
+    exam_date DATE NOT NULL,
+    grade VARCHAR(10) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Notices
+-- CSE Student Data Table
+CREATE TABLE cse_student_data (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    subject VARCHAR(100) NOT NULL,
+    grade VARCHAR(10) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Notices Table
 CREATE TABLE notices (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -89,35 +103,3 @@ CREATE TABLE notices (
     posted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Assignments
-CREATE TABLE assignments (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    deadline DATE,
-    submitted BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
--- Library
-CREATE TABLE library (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    author VARCHAR(255),
-    isbn VARCHAR(50),
-    published_year YEAR,
-    available_copies INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Indexes for optimization
-CREATE INDEX idx_users_username ON users(username);
-CREATE INDEX idx_cse_user ON cse_student_data(user_id);
-CREATE INDEX idx_routine_user_date ON routine_tracker(user_id, date);
-CREATE INDEX idx_attendance_user_date ON attendance(user_id, attendance_date);
-
--- Sample admin user (Replace the bcrypt hash with a valid hash generated by your Java code)
-INSERT INTO users (name, email, username, password, city, gender, phone, address)
-VALUES ('Admin User', 'admin@example.com', 'admin', '$2a$12$examplebcryptpasswordhash', 'City', 'Other', '0000000000', 'Admin Address');
